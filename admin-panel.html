@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Products Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Amazon Products Admin</h1>
+            <a href="index.html" class="text-gray-300 hover:text-white transition-colors">
+                <i class="fas fa-home mr-2"></i> View Website
+            </a>
+        </div>
+
+        <!-- Success Message -->
+        <div id="success-message" class="hidden bg-green-500 bg-opacity-80 text-white p-4 rounded-lg mb-6">
+            Changes saved successfully!
+        </div>
+
+        <!-- Add New Product Form -->
+        <div class="bg-gray-800 bg-opacity-80 rounded-xl p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-semibold mb-4">Add New Product</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="manual-name" class="block text-gray-300 mb-1">Product Name</label>
+                    <input type="text" id="manual-name" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter product name">
+                </div>
+                <div>
+                    <label for="manual-price" class="block text-gray-300 mb-1">Price (Numbers only)</label>
+                    <div class="flex items-center">
+                        <span class="text-gray-400 mr-2">$</span>
+                        <input type="number" step="0.01" id="manual-price" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="XX.XX">
+                    </div>
+                </div>
+                <div>
+                    <label for="manual-rating" class="block text-gray-300 mb-1">Rating (0-5)</label>
+                    <input type="text" id="manual-rating" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., 4.5">
+                </div>
+                <div>
+                    <label for="manual-image-file" class="block text-gray-300 mb-1">Product Image</label>
+                    <input type="file" id="manual-image-file" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                    <!-- Removed the tip about copying image address -->
+                </div>
+                <div class="md:col-span-2">
+                    <label for="manual-product-url" class="block text-gray-300 mb-1">Amazon Product URL (Affiliate Link)</label>
+                    <input type="text" id="manual-product-url" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://www.amazon.com/...">
+                </div>
+            </div>
+
+            <button id="add-product-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i> Add Product
+            </button>
+        </div>
+
+        <!-- Existing Products -->
+        <div class="bg-gray-800 bg-opacity-80 rounded-xl p-6 shadow-lg">
+            <h2 class="text-xl font-semibold mb-4">Existing Products</h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-2 px-4 text-left">Image</th>
+                            <th class="py-2 px-4 text-left">Name</th>
+                            <th class="py-2 px-4 text-left">Price</th>
+                            <th class="py-2 px-4 text-left">Rating</th>
+                            <th class="py-2 px-4 text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-table-body">
+                        <!-- Products will be loaded here dynamically -->
+                        <tr>
+                            <td colspan="5" class="py-4 text-center text-gray-400">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button id="save-all-btn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+                    <i class="fas fa-save mr-2"></i> Save All Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="amazon-parser.js"></script>
+    <script src="local-storage-fallback.js"></script>
+    <script>
+        // Check if user is authenticated
+        if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        // Global variable to store products
+        let products = [];
+
+        // Load products from JSON file or localStorage
+        async function loadProducts() {
+            try {
+                // First try to load from localStorage
+                const localStorageProducts = loadProductsFromLocalStorage();
+                if (localStorageProducts) {
+                    console.log('Loaded products from localStorage');
+                    products = localStorageProducts;
+                    displayProducts();
+                    return;
+                }
+
+                // Then try to load from JSON file
+                try {
+                    const response = await fetch('products.json');
+                    if (response.ok) {
+                        products = await response.json();
+                        console.log('Loaded products from products.json');
+                        displayProducts();
+                        return;
+                    }
+                } catch (fetchError) {
+                    console.warn('Error loading from products.json:', fetchError);
+                }
+
+                // If both fail, start with example products
+                products = [
+                    {
+                        name: "Apple AirPods Pro",
+                        url: "https://www.amazon.com/Apple-Generation-Cancelling-Transparency-Personalized/dp/B0CHX3QBFK/",
+                        image: "https://m.media-amazon.com/images/I/71an9eiBxpL._AC_UL320_.jpg",
+                        price: "$199.00",
+                        rating: "4.7"
+                    },
+                    {
+                        name: "Kindle Paperwhite",
+                        url: "https://www.amazon.com/Kindle-Paperwhite-adjustable-Ad-Supported/dp/B08KTZ8249/",
+                        image: "https://m.media-amazon.com/images/I/61L5QgPvgGL._AC_UL320_.jpg",
+                        price: "$139.99",
+                        rating: "4.8"
+                    },
+                    {
+                        name: "Logitech MX Master 3 Advanced Wireless Mouse",
+                        url: "https://www.amazon.com/Logitech-Master-Advanced-Wireless-Mouse/dp/B07S395RWD/",
+                        image: "https://m.media-amazon.com/images/I/71WkDpjH6mL._AC_UL320_.jpg",
+                        price: "$99.99",
+                        rating: "4.6"
+                    },
+                    {
+                        name: "Anker PowerCore 26800mAh Portable Charger",
+                        url: "https://www.amazon.com/Anker-PowerCore-Portable-Double-Speed-Recharging/dp/B01JIWQPMW/",
+                        image: "https://m.media-amazon.com/images/I/61Bv0KvY5VL._AC_UL320_.jpg",
+                        price: "$59.99",
+                        rating: "4.8"
+                    }
+                ];
+                console.log('Using default example products');
+                displayProducts();
+            } catch (error) {
+                console.error('Error in loadProducts:', error);
+                products = [];
+                displayProducts();
+            }
+        }
+
+        // Display products in the table
+        function displayProducts() {
+            const tableBody = document.getElementById('products-table-body');
+
+            if (products.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-4 text-center text-gray-400">No products added yet.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-700';
+
+                row.innerHTML = `
+                    <td class="py-2 px-4">
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                    </td>
+                    <td class="py-2 px-4">${product.name}</td>
+                    <td class="py-2 px-4">${product.price}</td>
+                    <td class="py-2 px-4">${product.rating}</td>
+                    <td class="py-2 px-4">
+                        <button class="text-red-500 hover:text-red-700 mr-2" onclick="removeProduct(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <a href="${product.url}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Removed fetchProductData, updateProductPreview, and currentProductData as they are no longer needed for manual entry.
+
+        // Add the current product
+        async function addProduct() { // Make function async to handle file reading
+            // Read values from manual input fields
+            const name = document.getElementById('manual-name').value.trim();
+            const price = document.getElementById('manual-price').value.trim();
+            const rating = document.getElementById('manual-rating').value.trim();
+            const imageFile = document.getElementById('manual-image-file').files[0]; // Get the file
+            const productUrl = document.getElementById('manual-product-url').value.trim();
+
+            // Basic validation
+            // Updated validation to check for imageFile
+            if (!name || !price || !rating || !imageFile || !productUrl) {
+                alert('Please fill in all product details, including selecting an image file.');
+                return;
+            }
+
+            // Read the image file as a Data URL
+            const reader = new FileReader();
+            const imageDataUrl = await new Promise((resolve, reject) => {
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(imageFile);
+            });
+
+            // Add new product to array, prepending '$' to price
+            products.push({
+                name: name,
+                price: '$' + parseFloat(price).toFixed(2), // Prepend $ and format
+                image: imageDataUrl, // Use the Data URL
+                rating: rating,
+                url: productUrl
+            });
+
+            // Clear manual input fields
+            document.getElementById('manual-name').value = '';
+            document.getElementById('manual-price').value = '';
+            document.getElementById('manual-rating').value = '';
+            document.getElementById('manual-image-file').value = ''; // Clear file input
+            document.getElementById('manual-product-url').value = '';
+
+            // Update display
+            displayProducts();
+
+            // Show success message
+            showSuccessMessage();
+        }
+
+        // Remove a product
+        function removeProduct(index) {
+            if (confirm('Are you sure you want to remove this product?')) {
+                products.splice(index, 1);
+                displayProducts();
+                showSuccessMessage();
+            }
+        }
+
+        // Save all products
+        async function saveAllProducts() {
+            // First try to save using PHP
+            try {
+                const response = await fetch('save-products.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(products)
+                });
+
+                if (response.ok) {
+                    console.log('Saved products using PHP');
+                    showSuccessMessage();
+                    return;
+                }
+            } catch (error) {
+                console.warn('PHP saving failed:', error);
+            }
+
+            // Fallback to localStorage
+            const savedToLocalStorage = saveProductsToLocalStorage(products);
+
+            if (savedToLocalStorage) {
+                console.log('Saved products to localStorage');
+                showSuccessMessage();
+            } else {
+                // Last resort: download as JSON file
+                downloadProductsAsJson(products);
+                alert('Products saved as a download. Please upload this file to your server as "products.json"');
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('success-message');
+            successMessage.classList.remove('hidden');
+
+            // Hide message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Removed toggleEditForm and updatePreviewFromForm functions as they are no longer needed.
+
+        // Event listeners
+        // Removed listener for fetch-product-btn
+        document.getElementById('add-product-btn').addEventListener('click', addProduct);
+        document.getElementById('save-all-btn').addEventListener('click', saveAllProducts);
+        // Removed listeners for edit-product-btn, update-preview-btn, and product-url keypress
+
+        // Initialize
+        loadProducts();
+
+        // Make removeProduct function available globally
+        window.removeProduct = removeProduct;
+    </script>
+</body>
+</html>

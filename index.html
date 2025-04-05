@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Links | Connect With Me</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Add an overlay to improve text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Darker overlay with 70% opacity for better contrast */
+            z-index: -1;
+        }
+
+        .link-card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            background-color: rgba(255, 255, 255, 0.9) !important; /* More opaque white background */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Add shadow in normal state */
+        }
+
+        .link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background-color: rgba(255, 255, 255, 0.95) !important; /* Almost solid white on hover */
+        }
+
+        .profile-pic {
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .amazon-item {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .amazon-item:hover {
+            transform: scale(1.03);
+        }
+
+        .amazon-item::after {
+            content: 'Click to view on Amazon';
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 10px;
+            color: #0066c0;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .amazon-item:hover::after {
+            opacity: 1;
+        }
+
+        .amazon-badge {
+            background: linear-gradient(to right, #FF9900, #FFAC31);
+        }
+
+        .social-icon-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 3px solid white; /* Simple white border */
+        }
+
+        .social-icon-large:hover {
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="container mx-auto px-4 py-12 max-w-2xl">
+        <!-- Profile Section -->
+        <div class="text-center mb-12">
+            <img src="portrait.png"
+                 alt="Profile Picture"
+                 class="profile-pic w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+            <h1 class="text-3xl font-bold mb-2" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">yudifgs</h1>
+            <p class="text-gray-300 mb-4">Digital Creator | Content Creator | Influencer</p>
+            <p class="text-gray-400 max-w-md mx-auto">Comparto mi viaje y mis creaciones con el mundo. ¡Conéctate conmigo abajo!</p>
+        </div>
+
+        <!-- Social Media Icons Section -->
+        <div class="flex justify-center space-x-12 mb-12 mt-8">
+            <a href="https://www.instagram.com/yudifgs" target="_blank" class="social-icon-large bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-full transition-transform hover:scale-110 shadow-lg">
+                <i class="fab fa-instagram text-white text-4xl"></i>
+            </a>
+            <a href="https://www.tiktok.com/@yudifgs" target="_blank" class="social-icon-large bg-black p-6 rounded-full transition-transform hover:scale-110 shadow-lg">
+                <i class="fab fa-tiktok text-white text-4xl"></i>
+            </a>
+            <a href="#" target="_blank" class="social-icon-large bg-green-600 p-6 rounded-full transition-transform hover:scale-110 shadow-lg">
+                <i class="fab fa-spotify text-white text-4xl"></i>
+            </a>
+        </div>
+
+        <!-- Amazon Favorites Section -->
+        <div class="bg-gray-800 bg-opacity-80 rounded-xl p-6 shadow-lg mb-12" style="box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <div class="flex items-center mb-4">
+                <div class="amazon-badge text-white px-3 py-1 rounded-lg mr-3 flex items-center">
+                    <i class="fab fa-amazon mr-2"></i>
+                    <span class="font-semibold">Favorites</span>
+                </div>
+                <h2 class="text-xl font-semibold text-white">My Amazon Picks</h2>
+            </div>
+            <p class="text-gray-300 mb-4">Products I love and recommend</p>
+
+            <div id="amazon-products" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Products will be loaded dynamically from products.json -->
+                <div class="col-span-2 text-center py-4 text-gray-400">
+                    <i class="fas fa-spinner fa-spin mr-2"></i> Loading products...
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="https://www.amazon.com/shop/yudifgs" target="_blank" class="text-blue-400 hover:text-blue-300 font-medium inline-flex items-center">
+                    View all my Amazon favorites
+                    <i class="fas fa-chevron-right ml-1 text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-300 text-sm">
+            <p>© 2023 yudifgs. All rights reserved.</p>
+            <p class="mt-2">
+                <a href="admin.html" class="text-gray-500 hover:text-gray-300 text-xs transition-colors">Admin</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="local-storage-fallback.js"></script>
+    <script>
+        // Load products from JSON file or localStorage
+        async function loadProducts() {
+            try {
+                let products;
+
+                // First try to load from localStorage
+                const localStorageProducts = loadProductsFromLocalStorage();
+                if (localStorageProducts) {
+                    console.log('Loaded products from localStorage');
+                    products = localStorageProducts;
+                    displayProducts(products);
+                    return;
+                }
+
+                // Then try to load from JSON file
+                try {
+                    const response = await fetch('products.json');
+                    if (response.ok) {
+                        products = await response.json();
+                        console.log('Loaded products from products.json');
+                        displayProducts(products);
+                        return;
+                    }
+                } catch (fetchError) {
+                    console.warn('Error loading from products.json:', fetchError);
+                }
+
+                // If both fail, show error message
+                document.getElementById('amazon-products').innerHTML = `
+                    <div class="col-span-2 text-center py-4 text-red-400">
+                        <i class="fas fa-exclamation-circle mr-2"></i> Failed to load products. Please try again later.
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error in loadProducts:', error);
+                document.getElementById('amazon-products').innerHTML = `
+                    <div class="col-span-2 text-center py-4 text-red-400">
+                        <i class="fas fa-exclamation-circle mr-2"></i> An error occurred while loading products.
+                    </div>
+                `;
+            }
+        }
+
+        // Display products in the grid
+        function displayProducts(products) {
+            const productsContainer = document.getElementById('amazon-products');
+
+            if (!products || products.length === 0) {
+                productsContainer.innerHTML = `
+                    <div class="col-span-2 text-center py-4 text-gray-400">
+                        No products available.
+                    </div>
+                `;
+                return;
+            }
+
+            productsContainer.innerHTML = '';
+
+            products.forEach(product => {
+                // Create product element
+                const productElement = document.createElement('div');
+                productElement.className = 'amazon-item bg-gray-200 bg-opacity-95 rounded-lg p-4 border border-gray-300 cursor-pointer';
+                productElement.setAttribute('data-amazon-url', product.url);
+
+                // Generate stars based on rating
+                const rating = parseFloat(product.rating);
+                let starsHTML = '';
+
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= Math.floor(rating)) {
+                        starsHTML += '<i class="fas fa-star"></i>';
+                    } else if (i - 0.5 <= rating) {
+                        starsHTML += '<i class="fas fa-star-half-alt"></i>';
+                    } else {
+                        starsHTML += '<i class="far fa-star"></i>';
+                    }
+                }
+
+                // Set product HTML
+                productElement.innerHTML = `
+                    <div class="flex">
+                        <img src="${product.image}"
+                             alt="${product.name}"
+                             class="w-20 h-20 object-contain rounded mr-4 border border-gray-400">
+                        <div>
+                            <h3 class="font-medium text-base line-clamp-2 text-gray-900">${product.name}</h3>
+                            <div class="flex items-center mt-1">
+                                <div class="text-yellow-400 text-sm">
+                                    ${starsHTML}
+                                </div>
+                                <span class="text-gray-700 text-sm ml-1">(${product.rating})</span>
+                            </div>
+                            <div class="text-blue-600 font-medium text-base mt-1">${product.price}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Add click event
+                productElement.addEventListener('click', function() {
+                    const amazonUrl = this.getAttribute('data-amazon-url');
+                    if (amazonUrl) {
+                        window.open(amazonUrl, '_blank');
+                    }
+                });
+
+                productsContainer.appendChild(productElement);
+            });
+        }
+
+        // Load products when page loads
+        loadProducts();
+    </script>
+</body>
+</html>

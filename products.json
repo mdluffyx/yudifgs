@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Apple AirPods Pro",
+    "url": "https://www.amazon.com/Apple-Generation-Cancelling-Transparency-Personalized/dp/B0CHX3QBFK/",
+    "image": "https://m.media-amazon.com/images/I/71an9eiBxpL._AC_UL320_.jpg",
+    "price": "$199.00",
+    "rating": "4.7"
+  },
+  {
+    "name": "Kindle Paperwhite",
+    "url": "https://www.amazon.com/Kindle-Paperwhite-adjustable-Ad-Supported/dp/B08KTZ8249/",
+    "image": "https://m.media-amazon.com/images/I/61L5QgPvgGL._AC_UL320_.jpg",
+    "price": "$139.99",
+    "rating": "4.8"
+  },
+  {
+    "name": "Logitech MX Master 3 Advanced Wireless Mouse",
+    "url": "https://www.amazon.com/Logitech-Master-Advanced-Wireless-Mouse/dp/B07S395RWD/",
+    "image": "https://m.media-amazon.com/images/I/71WkDpjH6mL._AC_UL320_.jpg",
+    "price": "$99.99",
+    "rating": "4.6"
+  },
+  {
+    "name": "Anker PowerCore 26800mAh Portable Charger",
+    "url": "https://www.amazon.com/Anker-PowerCore-Portable-Double-Speed-Recharging/dp/B01JIWQPMW/",
+    "image": "https://m.media-amazon.com/images/I/61Bv0KvY5VL._AC_UL320_.jpg",
+    "price": "$59.99",
+    "rating": "4.8"
+  }
+]
