@@ -2,51 +2,40 @@
  * This script provides a fallback for saving products when PHP is not available.
  * It uses the browser's localStorage to save product data.
  */
-
-// Function to save products to localStorage
-function saveProductsToLocalStorage(products) {
-    try {
-        localStorage.setItem('amazonProducts', JSON.stringify(products));
-        return true;
-    } catch (error) {
-        console.error('Error saving to localStorage:', error);
-        return false;
-    }
-}
-
-// Function to load products from localStorage
-function loadProductsFromLocalStorage() {
-    try {
-        const productsJson = localStorage.getItem('amazonProducts');
-        if (productsJson) {
-            return JSON.parse(productsJson);
-        }
-    } catch (error) {
-        console.error('Error loading from localStorage:', error);
-    }
-    return null;
-}
-
-// Function to download products as a JSON file
-function downloadProductsAsJson(products) {
-    const productsJson = JSON.stringify(products, null, 2);
-    const blob = new Blob([productsJson], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'products.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-// Export functions for use in other scripts
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        saveProductsToLocalStorage,
-        loadProductsFromLocalStorage,
-        downloadProductsAsJson
-    };
-}
+const PRODUCTS_KEY = 'amazonProducts';
+const PRODUCTS_FILE = 'products.json';
+/**
+ * Fetches products from products.json and saves them to local storage.
+ * If fetching fails, attempts to load products from local storage.
+ * If both fail, displays an alert.
+ */
+function initializeProducts() {
+  fetch(PRODUCTS_FILE)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${PRODUCTS_FILE}: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(products => {
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      console.log('Products fetched and saved to local storage.');
+    })
+    .catch(error => {
+      console.error(error);
+      const storedProducts = localStorage.getItem(PRODUCTS_KEY);
+      if (storedProducts) {
+        console.log('Loaded products from local storage.');
+      } else {
+        alert(`Failed to load products from ${PRODUCTS_FILE} or local storage.`);
+      }
+    });
+  }
+  
+  // Call the function to initialize products
+  initializeProducts();
+  
+  // Export the function for use in other modules if needed
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { initializeProducts };
+  }

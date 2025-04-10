@@ -55,6 +55,11 @@
         <div class="bg-gray-800 bg-opacity-80 rounded-xl p-6 shadow-lg mb-8">
             <h2 class="text-xl font-semibold mb-4">Add New Product</h2>
 
+            <div class="mb-4">
+                <label for="amazon-link" class="block text-gray-300 mb-1">Amazon Link</label>
+                <input type="text" id="amazon-link" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Paste Amazon link here">
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="manual-name" class="block text-gray-300 mb-1">Product Name</label>
@@ -82,9 +87,12 @@
                 </div>
             </div>
 
-            <button id="add-product-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i> Add Product
-            </button>
+            <div class="flex justify-end">
+                <button id="add-product-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors mr-2">
+                    <i class="fas fa-plus mr-2"></i> Add Product
+                </button>
+                <button id="submit-link-btn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"><i class="fas fa-link mr-2"></i>Submit Link</button>
+            </div>
         </div>
 
         <!-- Existing Products -->
@@ -342,7 +350,8 @@
 
         // Event listeners
         // Removed listener for fetch-product-btn
-        document.getElementById('add-product-btn').addEventListener('click', addProduct);
+        document.getElementById('submit-link-btn').addEventListener('click', submitAmazonLink);
+        document.getElementById('add-product-btn').addEventListener('click', addProduct);        
         document.getElementById('save-all-btn').addEventListener('click', saveAllProducts);
         // Removed listeners for edit-product-btn, update-preview-btn, and product-url keypress
 
@@ -351,6 +360,44 @@
 
         // Make removeProduct function available globally
         window.removeProduct = removeProduct;
+
+        async function submitAmazonLink() {
+            const link = document.getElementById('amazon-link').value;
+            if (!link) {
+                alert('Please enter an Amazon link.');
+                return;
+            }
+
+            try {
+                const productData = await fetchAmazonProductData(link);
+                if (productData) {
+                    products.push(productData);
+                    displayProducts();
+                    document.getElementById('amazon-link').value = ''; // Clear the input field
+                } else {
+                    alert('Could not retrieve product information from the provided link.');
+                }
+            } catch (error) {
+                console.error('Error fetching Amazon data:', error);
+                alert('An error occurred while processing the link.');
+            }
+        }
+
+        async function fetchAmazonProductData(link) {
+            try {
+                const response = await fetch('fetch-amazon-data.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'url=' + encodeURIComponent(link),
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching product data:', error);
+                return null;
+            }
+        }
     </script>
 </body>
 </html>

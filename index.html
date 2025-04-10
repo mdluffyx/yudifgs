@@ -204,48 +204,30 @@
 
             productsContainer.innerHTML = '';
 
-            products.forEach(product => {
+            products.forEach(product => {                
                 const productElement = document.createElement('div');
-                productElement.className = 'amazon-item bg-gray-200 bg-opacity-95 rounded-lg p-4 border border-gray-300 cursor-pointer';
-                productElement.setAttribute('data-amazon-url', product.url);
-
-                const rating = parseFloat(product.rating);
-                let starsHTML = '';
-
-                for (let i = 1; i <= 5; i++) {
-                    if (i <= Math.floor(rating)) {
-                        starsHTML += '<i class="fas fa-star"></i>';
-                    } else if (i - 0.5 <= rating) {
-                        starsHTML += '<i class="fas fa-star-half-alt"></i>';
-                    } else {
-                        starsHTML += '<i class="far fa-star"></i>';
-                    }
-                }
+                productElement.className = 'amazon-item bg-gray-100 hover:bg-gray-200 rounded-lg p-4 border border-gray-200 transition duration-300';
 
                 productElement.innerHTML = `
-                    <div class="flex">
-                        <img src="${product.image}"
-                             alt="${product.name}"
-                             class="w-20 h-20 object-contain rounded mr-4 border border-gray-400">
-                        <div>
-                            <h3 class="font-medium text-base line-clamp-2 text-gray-900">${product.name}</h3>
-                            <div class="flex items-center mt-1">
-                                <div class="text-yellow-400 text-sm">
-                                    ${starsHTML}
-                                </div>
-                                <span class="text-gray-700 text-sm ml-1">(${product.rating})</span>
+                    <a href="${product.amazonUrl}" target="_blank" class="block">
+                        <div class="flex items-center">
+                            <img src="${product.imageUrl}" alt="${product.title}" class="w-16 h-16 object-cover rounded mr-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-800 line-clamp-2">${product.title}</h3>
+                                <p class="text-xs text-gray-600 mt-1">ASIN: ${product.asin}</p>
+                                <p class="text-blue-500 font-semibold mt-1">${product.price}</p>
                             </div>
-                            <div class="text-blue-600 font-medium text-base mt-1">${product.price}</div>
                         </div>
-                    </div>
+                    </a>
                 `;
 
-                productElement.addEventListener('click', function() {
-                    const amazonUrl = this.getAttribute('data-amazon-url');
-                    if (amazonUrl) {
-                        window.open(amazonUrl, '_blank');
-                    }
-                });
+                // No click listener needed now, as the entire element is a link
+                // productElement.addEventListener('click', function() {
+                //     const amazonUrl = this.querySelector('a').href;
+                //     if (amazonUrl) {
+                //         window.open(amazonUrl, '_blank');
+                //     }
+                // });
 
                 productsContainer.appendChild(productElement);
             });
